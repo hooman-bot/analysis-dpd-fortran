@@ -5,24 +5,18 @@ program main
 
     integer :: I, K, P, NDUMP, NS, NB, NP, bn, kn
 
-
     900 format (A)
     901 format (1X, F9.3, 1X, F9.3, 1X, F9.3, 1X, F9.3)
 
     REAL, PARAMETER :: pi = 3.1415927
-    REAL, PARAMETER :: Boltz = 1.38064852
-    REAL, PARAMETER :: Avo = 6.0221409
-
-
+    
     NDUMP = 1500
     NB = 192000
     !NB = 50
     L = 40
     rc = 1
     dr = 0.025*rc
-
-
-
+    
     bn = int((3*rc/dr))
 
     allocate (Vol(bn), unG(bn), unGsol(bn), unGpol(bn), G(bn), Gsol(bn), Gpol(bn))
