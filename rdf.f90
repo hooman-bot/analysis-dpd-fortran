@@ -1,5 +1,6 @@
 program main
-    real, dimension (:), allocatable :: X, Y, Z, VX, VY, VZ, Vol, unG, unGsol, unGpol, G, Gsol, Gpol
+    ! Calculating the radial distribution function of the solvent
+    real, dimension (:), allocatable :: X, Y, Z, VX, VY, VZ, Vol, unG, unGsol, unGpol, G, Gsol, Gpol, Gn, Gsoln, Gpoln
     integer, dimension (:), allocatable :: NID, NTYP
     real :: rc, dr
 
@@ -19,11 +20,15 @@ program main
     
     bn = int((3*rc/dr))
 
-    allocate (Vol(bn), unG(bn), unGsol(bn), unGpol(bn), G(bn), Gsol(bn), Gpol(bn))
+    allocate (Vol(bn), unG(bn), unGsol(bn), unGpol(bn), G(bn), Gsol(bn), Gpol(bn), Gn(bn), Gsoln(bn), Gpoln(bn))
+    
+    Gn(:) = 0
+    Gsoln(:) = 0
+    Gpoln(:) = 0
 
     DO 16 K = 1, 1
 
-    open (unit = 10, file = 'dump_eq_restart.dil')
+    open (unit = 10, file = '*insert file_name*')
 
     read(10, *)
     read(10, *)
@@ -101,8 +106,48 @@ program main
     25 continue
 
     close(15)
+    
+    close(10)    close(23)
+    close(27)
+
+
+    Gn = Gn + G
+    Gsoln= Gsoln + Gsol
+    Gpoln = Gpoln + Gpol
 
     close(10)
 
-    16 continue 
+    16 continue
+    
+    Gn = Gn/NDUMP
+    Gsoln = Gsoln/NDUMP
+    Gpoln = Gpoln/NDUMP
+    
+    open(unit = 39, file = 'gr_ndump_all.txt', action = 'write')
+    open(unit = 45, file = 'gr_ndump_sol.txt', action = 'write')
+    open(unit = 67, file = 'gr_ndump_pol.txt', action = 'write')
+
+    write(39, 900) '#Test gr results: All'
+    write(39, 900)
+
+    write(45, 900) '#Test gr results: sol'
+    write(45, 900)
+
+    write(67, 900) '#Test gr results: pol'
+    write(67, 900)
+
+    DO 89 I = 1, bn
+
+    write(39, 901) (I*dr), Gn(I)
+
+    write(45, 901) (I*dr), Gsoln(I)
+
+    write(67, 901) (I*dr), Gpoln(I)
+    
+    89 continue
+
+    close(39)
+    close(45)
+    close(67)
+
 end program main
