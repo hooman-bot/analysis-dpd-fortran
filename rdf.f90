@@ -13,7 +13,6 @@ program main
     
     NDUMP = 1500
     NB = 192000
-    !NB = 50
     L = 40
     rc = 1
     dr = 0.025*rc
@@ -26,10 +25,11 @@ program main
     Gsoln(:) = 0
     Gpoln(:) = 0
 
-    DO 16 K = 1, 1
-
     open (unit = 10, file = '*insert file_name*')
-
+    
+    DO 16 K = 1, 1
+    
+    print *, 'Evaluating time step: ', K*1000
     read(10, *)
     read(10, *)
     read(10, *)
@@ -71,45 +71,14 @@ program main
 
     19 continue
 
-    DO 20 kn =1, bn
+    DO kn =1, bn
 
     Vol(kn) = 4*pi*dr*(dr*kn)**2+(pi*dr**3)/3
     G(kn) = abs(((L**3)*unG(kn))/(Vol(kn)*NB**2))
     Gsol(kn) =abs(((L**3)*unGsol(kn))/(Vol(kn)*NB**2))
     Gpol(kn) = abs(((L**3)*unGpol(kn))/(Vol(kn)*NB**2))
 
-    !print *, Vol(kn), G(kn), Gsol(kn), Gpol(kn)
-    20 continue
-
-    open(unit = 15, file = 'gr_test_all.txt', action = 'write')
-
-    open(unit = 23, file = 'gr_test_sol.txt', action = 'write')
-
-    open(unit = 27, file = 'gr_test_pol.txt', action = 'write')
-
-    write(15, 900) '#Test gr results: All'
-    write(15, 900)
-
-    write(23, 900) '#Test gr results: SOL'
-    write(23, 900)
-
-    write(27, 900) '#Test gr results: POL'
-    write(27, 900)
-
-
-    DO 25 I = 1, bn
-
-    write(15, 901) (I*dr), G(I)
-    write(23, 901) (I*dr), Gsol(I)
-    write(27, 901) (I*dr), Gpol(I)
-
-    25 continue
-
-    close(15)
-    
-    close(10)    close(23)
-    close(27)
-
+    END DO
 
     Gn = Gn + G
     Gsoln= Gsoln + Gsol
@@ -136,7 +105,7 @@ program main
     write(67, 900) '#Test gr results: pol'
     write(67, 900)
 
-    DO 89 I = 1, bn
+    DO I = 1, bn
 
     write(39, 901) (I*dr), Gn(I)
 
@@ -144,7 +113,7 @@ program main
 
     write(67, 901) (I*dr), Gpoln(I)
     
-    89 continue
+    END DO
 
     close(39)
     close(45)
